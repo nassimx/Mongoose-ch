@@ -1,105 +1,58 @@
-/**********************************************
- * 3. FCC Mongo & Mongoose Challenges
- * ==================================
- ***********************************************/
+// Installing and setting up Mongoose:
+// Add MongoDB and Mongoose to the project’s package.json.Store your MongoDB Atlas database URI in the private.env file as MONGO_URI.Surround the URI with single or double quotes and make sure no space exists between both the variable and the`=` and the value and`=`.Connect to the database using the following syntax:
 
-/** # MONGOOSE SETUP #
-/*  ================== */
-
-/** 1) Install & Set up mongoose */
-
-// Add mongodb and mongoose to the project's package.json. Then require
-// mongoose. Store your Mongo Atlas database URI in the private .env file
-// as MONGO_URI. Connect to the database using the following syntax:
-//
-// mongoose.connect(<Your URI>, { useNewUrlParser: true, useUnifiedTopology: true });
+`mongoose.connect(<Your URI>, { useNewUrlParser: true, useUnifiedTopology: true }); `;
 
 const mongoose = require("mongoose");
-require("dotenv").config(); // <--- Edited by Akhil Nayak 0206 add dotenv to use env file other will get MONGO_URI undefined
+require("dotenv").config();
 
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
-  useUnifiedTopology: true
+  useUnifiedTopology: true,
 });
 
-/** # SCHEMAS and MODELS #
-/*  ====================== */
-
-/** 2) Create a 'Person' Model */
-
-// First of all we need a **Schema**. Each schema maps to a MongoDB collection
-// and defines the shape of the documents within that collection. Schemas are
-// building block for Models. They can be nested to create complex models,
-// but in this case we'll keep things simple. A model allows you to create
-// instances of your objects, called **documents**.
-
-// Create a person having this prototype :
-
+// Create a person with this prototype:
 // - Person Prototype -
+
 // --------------------
-// name : string [required]
-// age :  number
-// favoriteFoods : array of strings (*)
 
-// Use the mongoose basic *schema types*. If you want you can also add more
-// fields, use simple validators like `required` or `unique`, and set
-// `default` values. See the [mongoose docs](http://mongoosejs.com/docs/guide.html).
+// name: string [required]
 
-// <Your code here >
+// age: number
+
+// favoriteFoods: array of strings (*)
+
+// Use the mongoose basic schema types. If you want you can also add more fields, use simple validators like required or unique, and set default values. See the mongoose docs.
 
 const Schema = mongoose.Schema;
 
 const personSchema = new Schema({
   name: { type: String, required: true },
   age: Number,
-  favoriteFoods: [String]
+  favoriteFoods: [String],
 });
 
 const Person = mongoose.model("Person", personSchema);
 
-// **Note**: Glitch is a real server, and in real servers interactions with
-// the db are placed in handler functions, to be called when some event happens
-// (e.g. someone hits an endpoint on your API). We'll follow the same approach
-// in these exercises. The `done()` function is a callback that tells us that
-// we can proceed after completing an asynchronous operation such as inserting,
-// searching, updating or deleting. It's following the Node convention and
-// should be called as `done(null, data)` on success, or `done(err)` on error.
-// **Warning** - When interacting with remote services, **errors may occur** !
+// Create and Save a Record of a Model:
+// Create a document instance using the Person constructor you built before. Pass to the constructor an object having the fields name, age, and favoriteFoods. Their types must conform to the ones in the Person Schema. Then call the method document.save() on the returned document instance. Pass to it a callback using the Node convention.
 
-// - Example -
-// var someFunc = function(done) {
-//   ... do something (risky) ...
-//   if(error) return done(error);
-//   done(null, result);
-// };
+/* Example */
 
-/** # [C]RUD part I - CREATE #
- /*  ========================== */
-
-/** 3) Create and Save a Person */
-
-// Create a `document` instance using the `Person` constructor you build before.
-// Pass to the constructor an object having the fields `name`, `age`,
-// and `favoriteFoods`. Their types must be conformant to the ones in
-// the Person `Schema`. Then call the method `document.save()` on the returned
-// document instance, passing to it a callback using the Node convention.
-// This is a common pattern, all the **CRUD** methods take a callback
-// function like this as the last argument.
-
-// - Example -
 // ...
-// person.save(function(err, data) {
-//    ...do your stuff here...
+
+// person.save(function (err, data) {
+// ...do your stuff here...
 // });
 
-let createAndSavePerson = done => {
-  let akhilNayak = new Person({
-    name: "Akhil Nayak",
-    age: 21,
-    favoriteFoods: ["Cake", "Fries", "Peanut Butter"]
+let createAndSavePerson = (done) => {
+  let newPerson = new Person({
+    name: "Nassim",
+    age: 24,
+    favoriteFoods: ["Cake", "Fries", "Peanut Butter"],
   });
 
-  akhilNayak.save((err, data) => {
+  newPerson.save((err, data) => {
     if (err) {
       return console.log(err);
     }
@@ -107,124 +60,80 @@ let createAndSavePerson = done => {
   });
 };
 
-/** 4) Create many People with `Model.create()` */
+// Create Many Records with model.create()
+// Sometimes you need to create many instances of your models, e.g. when seeding a database with initial data. Model.create() takes an array of objects like [{name: 'John', ...}, {...}, ...] as the first argument and saves them all in the DB.
 
-// Sometimes you need to create many Instances of your Models,
-// e.g. when seeding a database with initial data. `Model.create()`
-// takes an array of objects like [{name: 'John', ...}, {...}, ...],
-// as the 1st argument, and saves them all in the db.
-// Create many people using `Model.create()`, using the function argument
-// 'arrayOfPeople'.
+// Create several people with Model.create(), using the function argument arrayOfPeople.
 
 let arrayOfPeople = [
   {
     name: "Hello",
     age: 21,
-    favoriteFoods: ["Cake", "Fries", "Peanut Butter"]
+    favoriteFoods: ["Cake", "Fries", "Peanut Butter"],
   },
   {
-    name: "Akhil Second",
+    name: "Jhon Second",
     age: 19,
-    favoriteFoods: ["Ice-cream", "Pizza", "Milk"]
+    favoriteFoods: ["Ice-cream", "Pizza", "Milk"],
   },
   {
-    name: "Third Nayak",
+    name: "Third Mike",
     age: 31,
-    favoriteFoods: ["Tomato", "Potato", "Butter Milk"]
+    favoriteFoods: ["Tomato", "Potato", "Butter Milk"],
   },
   {
     name: "Delete1",
     age: 3,
-    favoriteFoods: ["Tomato", "Potato", "Butter Milk"]
+    favoriteFoods: ["Tomato", "Potato", "Butter Milk"],
   },
   {
     name: "Mary",
     age: 1,
-    favoriteFoods: ["Made", "To", "Delete"]
-  }
+    favoriteFoods: ["Made", "To", "Delete"],
+  },
 ];
 
-var createManyPeople = function(arrayOfPeople, done) {
+var createManyPeople = function (arrayOfPeople, done) {
   Person.create(arrayOfPeople, (err, people) => {
     if (err) return console.log(err);
     done(null, people);
   });
 };
 
-/** # C[R]UD part II - READ #
-/*  ========================= */
-/** 5) Use `Model.find()` */
+// Use model.find() to Search Your Database
+// Find all the people having a given name, using Model.find() -> [Person]
 
-// Find all the people having a given name, using `Model.find() -> [Person]`
-// In its simplest usage, `Model.find()` accepts a **query** document (a JSON
-// object ) as the first argument, and returns an **array** of matches.
-// It supports an extremely wide range of search options. Check it in the docs.
-// Use the function argument `personName` as search key.
-
-var findPeopleByName = function(personName, done) {
-  Person.find({ name: personName }, function(err, personFound) {
+var findPeopleByName = function (personName, done) {
+  Person.find({ name: personName }, function (err, personFound) {
     if (err) return console.log(err);
     done(null, personFound);
   });
 };
 
-// findPeopleByName();
-/** 6) Use `Model.findOne()` */
+// Use model.findOne() to Return a Single Matching Document from Your Database
+// Find just one person which has a certain food in the person's favorites, using Model.findOne() -> Person. Use the function argument food as a search key.
 
-// `Model.findOne()` behaves like `.find()`, but it returns **only one**
-// document, even if there are more. It is especially useful
-// when searching by properties that you have declared as unique.
-// Find just one person which has a certain food in her favorites,
-// using `Model.findOne() -> Person`. Use the function
-// argument `food` as search key
-
-var findOneByFood = function(food, done) {
-  Person.findOne({ favoriteFoods: food }, function(err, data) {
+var findOneByFood = function (food, done) {
+  Person.findOne({ favoriteFoods: food }, function (err, data) {
     if (err) return console.log(err);
     done(null, data);
   });
 };
 
-/** 7) Use `Model.findById()` */
+// Use model.findById() to Search Your Database By _id
+// Find the (only!!) person having a given _id, using Model.findById() -> Person. Use the function argument personId as the search key.
 
-// When saving a document, mongodb automatically add the field `_id`,
-// and set it to a unique alphanumeric key. Searching by `_id` is an
-// extremely frequent operation, so `moongose` provides a dedicated
-// method for it. Find the (only!!) person having a certain Id,
-// using `Model.findById() -> Person`.
-// Use the function argument 'personId' as search key.
-
-var findPersonById = function(personId, done) {
-  Person.findById({ _id: personId }, function(err, data) {
+var findPersonById = function (personId, done) {
+  Person.findById({ _id: personId }, function (err, data) {
     if (err) return console.log(err);
     done(null, data);
   });
 };
 
-/** # CR[U]D part III - UPDATE # 
-/*  ============================ */
+// Perform Classic Updates by Running Find, Edit, then Save
+// Find a person by _id ( use any of the above methods ) with the parameter personId as a search key. Add "hamburger" to the list of the person's favoriteFoods (you can use Array.push()). Then - inside the find callback - save() the updated Person.
 
-/** 8) Classic Update : Find, Edit then Save */
-
-// In the good old days this was what you needed to do if you wanted to edit
-// a document and be able to use it somehow e.g. sending it back in a server
-// response. Mongoose has a dedicated updating method : `Model.update()`,
-// which is directly binded to the low-level mongo driver.
-// It can bulk edit many documents matching certain criteria, but it doesn't
-// pass the edited document to its callback, only a 'status' message.
-// Furthermore it makes validation difficult, because it just
-// direcly calls the mongodb driver.
-
-// Find a person by Id ( use any of the above methods ) with the parameter
-// `personId` as search key. Add "hamburger" to the list of her `favoriteFoods`
-// (you can use Array.push()). Then - **inside the find callback** - `.save()`
-// the updated `Person`.
-
-// [*] Hint: This may be tricky if in your `Schema` you declared
-// `favoriteFoods` as an `Array` without specifying the type (i.e. `[String]`).
-// In that case `favoriteFoods` defaults to `Mixed` type, and you have to
-// manually mark it as edited using `document.markModified('edited-field')`
-// (http://mongoosejs.com/docs/schematypes.html - #Mixed )
+// Note: This may seem tricky, if, in your Schema, you declared favoriteFoods as an Array, without specifying the type (i.e. [String]). In that case, favoriteFoods defaults to Mixed type, and you have to manually mark it as edited using document.markModified('edited-field'). See Mongoose documentation
 
 let findEditThenSave = (personId, done) => {
   let foodToAdd = "hamburger";
@@ -238,22 +147,12 @@ let findEditThenSave = (personId, done) => {
   });
 };
 
-/** 9) New Update : Use `findOneAndUpdate()` */
+// Perform New Updates on a Document Using model.findOneAndUpdate()
+// Find a person by Name and set the person's age to 20. Use the function parameter personName as a search key.
 
-// Recent versions of `mongoose` have methods to simplify documents updating.
-// Some more advanced features (i.e. pre/post hooks, validation) behave
-// differently with this approach, so the 'Classic' method is still useful in
-// many situations. `findByIdAndUpdate()` can be used when searching by Id.
-//
-// Find a person by `name` and set her age to `20`. Use the function parameter
-// `personName` as search key.
-//
-// Hint: We want you to return the **updated** document. In order to do that
-// you need to pass the options document `{ new: true }` as the 3rd argument
-// to `findOneAndUpdate()`. By default the method
-// passes the unmodified object to its callback.
+// Note: You should return the updated document. To do that you need to pass the options document { new: true } as the 3rd argument to findOneAndUpdate(). By default, these methods return the unmodified object.
 
-var findAndUpdate = function(personName, done) {
+var findAndUpdate = function (personName, done) {
   var ageToSet = 20;
 
   Person.findOneAndUpdate(
@@ -267,34 +166,22 @@ var findAndUpdate = function(personName, done) {
   );
 };
 
-/** # CRU[D] part IV - DELETE #
-/*  =========================== */
+// Delete One Document Using model.findByIdAndRemove
+// Delete one person by the person's _id. You should use one of the methods findByIdAndRemove() or findOneAndRemove(). They are like the previous update methods. They pass the removed document to the DB. As usual, use the function argument personId as the search key.
 
-/** 10) Delete one Person */
-
-// Delete one person by her `_id`. You should use one of the methods
-// `findByIdAndRemove()` or `findOneAndRemove()`. They are similar to the
-// previous update methods. They pass the removed document to the cb.
-// As usual, use the function argument `personId` as search key.
-
-var removeById = function(personId, done) {
+var removeById = function (personId, done) {
   Person.findByIdAndRemove({ _id: personId }, (err, data) => {
     if (err) return console.log(err);
     done(null, data);
   });
 };
 
-/** 11) Delete many People */
+// MongoDB and Mongoose - Delete Many Documents with model.remove()
+// Delete all the people whose name is “Mary”, using Model.remove(). Pass it to a query document with the name field set, and of course, do a callback.
 
-// `Model.remove()` is useful to delete all the documents matching given criteria.
-// Delete all the people whose name is "Mary", using `Model.remove()`.
-// Pass to it a query ducument with the "name" field set, and of course a callback.
-//
-// Note: `Model.remove()` doesn't return the removed document, but a document
-// containing the outcome of the operation, and the number of items affected.
-// Don't forget to pass it to the `done()` callback, since we use it in tests.
+// Note: The Model.remove() doesn’t return the deleted document, but a JSON object containing the outcome of the operation, and the number of items affected. Don’t forget to pass it to the done() callback, since we use it in tests.
 
-var removeManyPeople = function(done) {
+var removeManyPeople = function (done) {
   var nameToRemove = "Mary";
   Person.remove({ name: nameToRemove }, (err, data) => {
     if (err) return console.log(err);
@@ -302,50 +189,20 @@ var removeManyPeople = function(done) {
   });
 };
 
-/** # C[R]UD part V -  More about Queries # 
-/*  ======================================= */
+// Chain Search Query Helpers to Narrow Search Results
+// Find people who like burritos. Sort them by name, limit the results to two documents, and hide their age. Chain .find(), .sort(), .limit(), .select(), and then .exec(). Pass the done(err, data) callback to exec().
 
-/** 12) Chain Query helpers */
-
-// If you don't pass the `callback` as the last argument to `Model.find()`
-// (or to the other similar search methods introduced before), the query is
-// not executed, and can even be stored in a variable for later use.
-// This kind of object enables you to build up a query using chaining syntax.
-// The actual db search is executed when you finally chain
-// the method `.exec()`, passing your callback to it.
-// There are many query helpers, here we'll use the most 'famous' ones.
-
-// Find people who like "burrito". Sort them alphabetically by name,
-// Limit the results to two documents, and hide their age.
-// Chain `.find()`, `.sort()`, `.limit()`, `.select()`, and then `.exec()`,
-// passing the `done(err, data)` callback to it.
-
-var queryChain = function(done) {
+var queryChain = function (done) {
   var foodToSearch = "Pizza";
   Person.find({ favoriteFoods: foodToSearch })
-    .sort({ name: 1 })    //<--Edited By Akhil Nayak 0206---> 1 means ascending.
+    .sort({ name: 1 })
     .limit(2)
-    .select({ age: 0 })   //<--Edited By Akhil Nayak 0206---> 0 means hide.
+    .select({ age: 0 })
     .exec((err, data) => {
       if (err) return console.log(err);
       done(null, data);
     });
 };
-
-/** **Well Done !!**
-/* You completed these challenges, let's go celebrate !
- */
-
-/** # Further Readings... #
-/*  ======================= */
-// If you are eager to learn and want to go deeper, You may look at :
-// * Indexes ( very important for query efficiency ),
-// * Pre/Post hooks,
-// * Validation,
-// * Schema Virtuals and  Model, Static, and Instance methods,
-// * and much more in the [mongoose docs](http://mongoosejs.com/docs/)
-
-//----- **DO NOT EDIT BELOW THIS LINE** ----------------------------------
 
 exports.PersonModel = Person;
 exports.createAndSavePerson = createAndSavePerson;
